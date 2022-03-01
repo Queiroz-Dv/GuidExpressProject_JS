@@ -1,9 +1,7 @@
-const { request } = require("express");
 const express = require("express");
 const router = express.Router(); //Create Route Page
 const Category = require("./Category");
 const slugify = require("slugify");
-const res = require("express/lib/response");
 
 //Create New Category
 router.get("/admin/categories/new", (request, response) => {
@@ -18,7 +16,7 @@ router.post("/categories/save", (request, response) => {
       title: title,
       slug: slugify(title)
     }).then(() => {
-      response.redirect("/");
+      response.redirect("/admin/categories/save");
     })
   } else {
     response.redirect("/admin/categories/new");
@@ -50,5 +48,22 @@ router.post("/categories/delete", (request, response) => {
   } else { //Nulls
     response.redirect("/admin/categories");
   }
+});
+
+//Edit a category
+router.get("/admin/categories/edit/:id", (request, response) => {
+  var id = request.params.id;
+  if (isNaN(id)) {
+    response.redirect("/admin/categories");
+  }
+  Category.findByPk(id).then(category => {
+    if (category != undefined) {
+      response.render("admin/categories/edit", {category: category});
+    } else {
+      response.redirect("/admin/categories");
+    }
+  }).catch(erro => {
+    response.redirect("/admin/categories");
+  });
 });
 module.exports = router;
