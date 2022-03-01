@@ -7,8 +7,9 @@
       <h2>Atualizar Categorias</h2>
     </div>
     <div class="card-body">
-      <form method="post" action="/categories/save">
+      <form method="post" action="/categories/update">
         <input class="form-control" type="text" name="title" placeholder="Defina a categoria" value="<%= category.title  %> "><br>
+        <input type="hidden" name="id" value="<%= category.id %> ">
         <button class="btn btn-success">Atualizar</button>
       </form>
     </div>
