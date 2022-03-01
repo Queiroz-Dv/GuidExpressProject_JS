@@ -14,8 +14,8 @@ const Article = connection.define('articles', {
     allowNull: false
   }
 })
-Category.hasMany(Article);
-Article.belongsTo(Category);
+Category.hasMany(Article); //1 to many
+Article.belongsTo(Category); //1 to N
 
 //Article.sync({force: true});
 module.exports = Article;
