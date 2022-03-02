@@ -58,4 +58,75 @@ router.post("/articles/delete", (request, response) => {
     response.redirect("/admin/articles");
   }
 });
+
+//Edit an article
+router.get("/admin/articles/edit/:id", (request, response) => {
+  var id = request.params.id;
+  Article.findByPk(id).then(article => {
+    if (article != undefined) {
+      Category.findAll().then(categories => {
+        response.render("admin/articles/edit", { categories: categories, article: article })
+      });
+    } else {
+      response.redirect("/");
+    }
+  }).catch(erro => {
+    response.redirect("/");
+  });
+});
+
+router.post("/articles/update", (request, response) => {
+  var id = request.body.id;
+  var title = request.body.title;
+  var body = request.body.body;
+  var category = request.body.category;
+
+  Article.update({
+    title: title,
+    body: body,
+    categoryId: category,
+    slug: slugify(title)
+  },
+    {
+      where: {
+        id: id
+      }
+    }).then(() => {
+      response.redirect("/admin/articles");
+    }).catch(error => {
+      response.redirect("/");
+    });
+});
+
+router.get("/articles/page/:num", (request, response) => {
+  var page = request.params.num;
+  var offset = 0;
+  if (isNaN(page) || page == 1) {
+    offset = 0;
+  } else {
+    offset = (parseInt(page) - 1) * 4;
+  }
+  Article.findAndCountAll({
+    limit: 4,
+    offset: offset,
+    order: [
+      ['id', 'DESC']
+    ]
+  }).then(articles => {
+    var next;
+    if (offset + 4 >= articles.count) {
+      next = false;
+    } else {
+      next = true;
+    }
+    var result = {
+      page: parseInt(page),
+      next: next,
+      articles: articles
+    }
+    Category.findAll().then(categories => {
+      response.render("admin/articles/page", { result: result, categories: categories })
+    });
+  })
+});
 module.exports = router;
