@@ -57,7 +57,7 @@ app.get("/:slug", (request, response) => {
   }).then(article => {
     if (article != undefined) {
       Category.findAll().then(categories => {
-        response.render("index", { article: article, categories: categories });
+        response.render("article", { article: article, categories: categories });
       });
     } else {
       response.redirect("/");
