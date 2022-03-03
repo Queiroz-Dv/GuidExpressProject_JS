@@ -3,12 +3,13 @@ const router = express.Router(); //Create Route Page
 const Category = require("../categories/Category");
 const Article = require("./Article");
 const slugify = require("slugify");
+const adminAuth = require("../middlewares/adminAuth")
 
 
 //Routes
 
 //Article Index 
-router.get("/admin/articles", (request, response) => {
+router.get("/admin/articles", adminAuth, (request, response) => {
   Article.findAll({
     include: [{ model: Category }]
   }).then(articles => {
@@ -17,14 +18,14 @@ router.get("/admin/articles", (request, response) => {
 });
 
 //Create a new article
-router.get("/admin/articles/new", (request, response) => {
+router.get("/admin/articles/new", adminAuth, (request, response) => {
   Category.findAll().then(categories => {
     response.render("admin/articles/new", { categories: categories })
   });
 });
 
 //Create a new article
-router.post("/articles/save", (request, response) => {
+router.post("/articles/save", adminAuth, (request, response) => {
   var title = request.body.title;
   var body = request.body.body;
   var category = request.body.category;
@@ -40,7 +41,7 @@ router.post("/articles/save", (request, response) => {
 });
 
 //Delete an article
-router.post("/articles/delete", (request, response) => {
+router.post("/articles/delete", adminAuth, (request, response) => {
   var id = request.body.id;
   if (id != undefined) {
     if (!isNaN(id)) {
@@ -60,7 +61,7 @@ router.post("/articles/delete", (request, response) => {
 });
 
 //Edit an article
-router.get("/admin/articles/edit/:id", (request, response) => {
+router.get("/admin/articles/edit/:id", adminAuth, (request, response) => {
   var id = request.params.id;
   Article.findByPk(id).then(article => {
     if (article != undefined) {
@@ -75,7 +76,7 @@ router.get("/admin/articles/edit/:id", (request, response) => {
   });
 });
 
-router.post("/articles/update", (request, response) => {
+router.post("/articles/update", adminAuth, (request, response) => {
   var id = request.body.id;
   var title = request.body.title;
   var body = request.body.body;
